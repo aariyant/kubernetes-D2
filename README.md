@@ -1233,6 +1233,9 @@ External Traffic Policy:  Cluster
 Events:                   <none>
 ```
 
+> [!WARNING]
+> If we use docker as a drive, dont forget to run minikube tunnel first
+
 #### LoadBalancer
 LoadBalancer Services are exposed outside your cluster using an external load balancer resource. This requires a connection to a load balancer provider, typically achieved by integrating your cluster with your cloud environment such as AWS or GCP.
 
@@ -1324,7 +1327,7 @@ spec:
   ```
 
 #### Create Ingress Services
-- Create two services `apple` and 
+- Create two services `apple` and `banana`
   ```yaml
   # apple.yaml
 
@@ -1381,24 +1384,31 @@ spec:
   ```yaml
   # ingress.yaml
 
-  apiVersion: extensions/v1beta1
+  apiVersion: networking.k8s.io/v1
   kind: Ingress
   metadata:
     name: example-ingress
     annotations:
       ingress.kubernetes.io/rewrite-target: /
   spec:
+    ingressClassName:
     rules:
     - http:
         paths:
           - path: /apple
+            pathType: Prefix
             backend:
-              serviceName: apple-service
-              servicePort: 5678
+              service:
+                name: apple-service
+                port:
+                  number: 5678
           - path: /banana
+            pathType: Prefix
             backend:
-              serviceName: banana-service
-              servicePort: 5678
+              service:
+                name: banana-service
+                port:
+                  number: 5678
   ```
 - Verify ingress
   ```shell
@@ -1421,6 +1431,8 @@ spec:
     Normal  Sync    5m1s (x2 over 5m28s)  nginx-ingress-controller  Scheduled for sync
   ```
 
+  > [!WARNING]
+  > If we use docker as a drive, dont forget to run minikube tunnel first
 
 ### Another Services Types
 
